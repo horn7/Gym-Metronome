@@ -1,0 +1,20 @@
+{
+    "name": "Gym Timer",
+    "short_name": "GymTimer",
+    "icons": [
+        {
+            "src": "/icons/favicon.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/favicon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "start_url": "/index.html",
+    "display": "standalone",
+    "background_color": "#111827",
+    "theme_color": "#1F2937"
+}

@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html.flash {
+  animation: flash-bg 0.7s ease;
+}
+@keyframes flash-bg {
+  0% { background-color: #0f1724; }
+  10% { background-color: #7f1d1d; }
+  100% { background-color: #0f1724; }
+}
+
+body {
+  background-color: #0b1220;
+  color: white;
+  font-family: Inter, sans-serif;
+}
