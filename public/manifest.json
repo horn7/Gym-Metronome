@@ -1,6 +1,6 @@
 {
-    "name": "Gym Timer",
-    "short_name": "GymTimer",
+    "name": "Gym Metronome",
+    "short_name": "GymMetronome",
     "icons": [
         {
             "src": "/icons/favicon.png",
