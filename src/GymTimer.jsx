@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 
 export default function GymTimer() {
-  const [status, setStatus] = useState('stopped'); // 'running', 'paused', 'stopped'
+  const [status, setStatus] = useState('restart'); // 'running', 'paused', 'restart'
   const [time, setTime] = useState(0); // seconds since start
+  const [exerciseTime, setExerciseTime] = useState(0); // seconds since start
   const [exerciseIndex, setExerciseIndex] = useState(0);
   const [setIndex, setSetIndex] = useState(1);
   const [cycles, setCycles] = useState(0);
@@ -17,8 +18,9 @@ export default function GymTimer() {
 
   // Start or resume
   const handleStart = () => {
-    if (status === 'stopped') {
+    if (status === 'restart') {
       setTime(0);
+      setExerciseTime(0);
       setExerciseIndex(0);
       setSetIndex(1);
       setCycles(0);
@@ -26,8 +28,14 @@ export default function GymTimer() {
     setStatus('running');
   };
 
+  useEffect(() => {
+    if (status === 'restart') {
+      handleStart();
+    }
+  }, [status]);
+
   const handlePause = () => setStatus('paused');
-  const handleStop = () => setStatus('stopped');
+  const handleRestart = () => setStatus('restart');
 
   // Advance set manually
   const handleNextSet = () => {
@@ -36,6 +44,7 @@ export default function GymTimer() {
 
   // Advance logic
   const advanceSet = () => {
+    setExerciseTime(0);
     const current = workoutPlan[exerciseIndex];
     if (setIndex < current.sets) {
       setSetIndex(prev => prev + 1);
@@ -50,7 +59,10 @@ export default function GymTimer() {
   // Timer effect
   useEffect(() => {
     if (status === 'running') {
-      intervalRef.current = setInterval(() => setTime(t => t + 1), 1000);
+      intervalRef.current = setInterval(() => {
+        setTime(t => t + 1)
+        setExerciseTime(t => t + 1)
+      }, 1000);
     } else clearInterval(intervalRef.current);
     return () => clearInterval(intervalRef.current);
   }, [status]);
@@ -77,7 +89,7 @@ export default function GymTimer() {
     o.frequency.setValueAtTime(880, ctx.currentTime);
 
     // Zwiększamy głośność i długość
-    g.gain.setValueAtTime(0.001, ctx.currentTime);
+    g.gain.setValueAtTime(0.002, ctx.currentTime);
     g.gain.exponentialRampToValueAtTime(0.5, ctx.currentTime + 0.05); // szybciej i głośniej
     g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6); // wolniej wygasa
 
@@ -91,9 +103,6 @@ export default function GymTimer() {
     document.documentElement.classList.add('flash');
     setTimeout(() => document.documentElement.classList.remove('flash'), 700);
   };
-
-  const minutes = Math.floor(time / 60);
-  const seconds = time % 60;
 
   return (
     <div className="w-full max-w-lg ">
@@ -121,7 +130,6 @@ export default function GymTimer() {
                 nextExerciseIndex = (exerciseIndex + 1) % workoutPlan.length;
                 nextSet = 1;
               }
-
               const next = workoutPlan[nextExerciseIndex];
               return `Exercise ${next.exercise} • Set ${nextSet}/${next.sets}`;
             })()}
@@ -135,9 +143,9 @@ export default function GymTimer() {
 
         <div className="bg-neutral-900 rounded-xl p-4 text-center mb-4">
           <div className="text-5xl font-mono font-bold">
-            {minutes}:{seconds.toString().padStart(2,'0')}
+            {Math.floor(exerciseTime / 60)}:{(exerciseTime % 60).toString().padStart(2,'0')}
           </div>
-          <div className="text-xs text-neutral-400 mt-2">Total time</div>
+          <div className="text-xs text-neutral-400 mt-2">Total time: {Math.floor(time / 60)}:{(time % 60).toString().padStart(2,'0')}</div>
         </div>
 
         <div className="flex gap-3 justify-center">
@@ -146,8 +154,8 @@ export default function GymTimer() {
           ) : (
             <button onClick={handlePause} className="px-4 py-2 rounded-lg bg-yellow-600/30 hover:bg-yellow-700 font-semibold">Pause</button>
           )}
-          <button onClick={handleStop} className="px-4 py-2 rounded-lg bg-red-600/30 hover:bg-red-700 font-semibold">Stop</button>
-          <button onClick={handleNextSet} className="px-4 py-2 rounded-lg bg-blue-600/30 hover:bg-blue-700 font-semibold" disabled={status==='stopped'}>Next Set</button>
+          <button onClick={handleNextSet} className="px-4 py-2 rounded-lg bg-blue-600/30 hover:bg-blue-700 font-semibold">Next Set</button>
+          <button onClick={handleRestart} className="px-4 py-2 rounded-lg bg-red-600/30 hover:bg-red-700 font-semibold">Restart</button>
         </div>
 
         <div className="mt-4 text-sm text-neutral-400">
