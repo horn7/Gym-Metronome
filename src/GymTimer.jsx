@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 
 export default function GymTimer() {
-  const [status, setStatus] = useState('restart'); // 'running', 'paused', 'restart'
+  const [status, setStatus] = useState('paused'); // 'running', 'paused', 'restart'
   const [time, setTime] = useState(0); // seconds since start
   const [exerciseTime, setExerciseTime] = useState(0); // seconds since start
   const [exerciseIndex, setExerciseIndex] = useState(0);
